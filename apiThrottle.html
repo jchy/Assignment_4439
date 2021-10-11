@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Search using API Throttle</title>
+</head>
+
+<body>
+
+    <script>
+        const navHead = document.createElement("div");
+        const navBar = document.createElement("div");
+        navBar.id = "nav";
+        navHead.textContent = "Welcome to the Movie Search Engine";
+        navHead.style.textAlign = "center";
+        navHead.style.fontSize = "40px";
+        navHead.style.backgroundColor = "black";
+        navHead.style.height = "80px"
+        navHead.style.textAlign = "center"
+        navHead.style.paddingTop = "40px"
+        navHead.style.color = "red"
+
+        var body = document.querySelector("body");
+        body.append(navBar);
+        body.style.backgroundColor = "#F3E0DC";
+        navBar.append(navHead);
+
+        const movieSearchInput = document.createElement("input");
+        movieSearchInput.placeholder = "  🔍 Type here the Movie Name to be Searched ";
+        movieSearchInput.id = "movieSearchText"
+        navBar.append(movieSearchInput);
+
+        movieSearchInput.style.height = "80px";
+        movieSearchInput.style.width = "70%";
+        movieSearchInput.style.textAlign = "center";
+        movieSearchInput.style.marginLeft = "12%";
+        movieSearchInput.style.marginTop = "50px";
+        movieSearchInput.style.fontSize = "30px";
+        movieSearchInput.style.borderRadius = "20px";
+        movieSearchInput.style.border = "5px solid blue";
+
+        const searchBtn = document.createElement("button");
+        searchBtn.textContent = " Search Movies";
+        searchBtn.id = "searchBtn";
+        navBar.append(searchBtn);
+        searchBtn.style.height = "60px"
+        searchBtn.style.width = "50%"
+        searchBtn.style.marginLeft = "22%"
+        searchBtn.style.marginTop = "30px"
+        searchBtn.style.fontSize = "25px"
+        searchBtn.style.borderRadius = "30px"
+        searchBtn.style.backgroundColor = "black"
+        searchBtn.style.color = "white";
+
+
+        const container = document.createElement("div");
+        container.id = "container";
+        navBar.append(container);
+
+
+
+        searchBtn.addEventListener("click", () => {
+            const searchInput = document.getElementById("movieSearchText").value;
+            if (searchInput) {
+                searchMovieFunction(searchInput);
+            }
+            else {
+                const container = document.getElementById("container");
+                container.innerHTML = "";
+                const errorImage = document.createElement("img");
+                errorImage.src = 'https://juststickers.in/wp-content/uploads/2016/12/404-error-not-found.png';
+                errorImage.style.height = "300px"
+                errorImage.style.width = "300px"
+                errorImage.style.paddingLeft = "35%"
+                errorImage.style.marginTop = "10px"
+                container.append(errorImage);
+                const navBar = document.getElementById("nav");
+                navBar.append(container);
+            }
+        });
+
+        async function searchMovieFunction(searchMovieName) {
+            var response = await fetch(`http://www.omdbapi.com/?t=${searchMovieName}&apikey=13e98702`);
+            var movieData = await response.json();
+            displaySearch(movieData);
+            console.log(movieData);
+        }
+
+
+        function displaySearch(data) {
+            container.style.display = "flex";
+            container.style.height = "310px"
+            container.style.marginTop = "20px";
+            container.style.paddingLeft = "10%";
+            container.style.border = "2px solid grey";
+            container.style.padding = "20px";
+            container.style.marginLeft = "10%";
+            container.style.marginRight = "10%";
+            container.style.backgroundColor = "black";
+            container.style.color = "white";
+
+
+
+            container.innerHTML = "";
+            const movieDiv = document.createElement("div");
+            const movieDetails = document.createElement("div");
+            const poster = document.createElement("img");
+            poster.src = data.Poster;
+            poster.style.height = "300px";
+            movieDiv.append(poster);
+
+            const movieName = document.createElement("h3");
+            movieName.textContent = "⦿ Movie Name : " + data.Title;
+            movieDetails.append(movieName);
+
+            const releaseYear = document.createElement("h3");
+            releaseYear.textContent = "⦿ Release Year : " + data.Year;
+            movieDetails.append(releaseYear);
+
+            const actors = document.createElement("h3");
+            actors.textContent = "⦿ Actors : " + data.Actors;
+            movieDetails.append(actors);
+
+            const runTime = document.createElement("h3");
+            runTime.textContent = "⦿ RunTime : ‣" + data.Runtime;
+            movieDetails.append(runTime);
+
+            const imdbRating = document.createElement("h3");
+            var star = "";
+            var rating = ratingStar(data.imdbRating, star);
+            // console.log(rating);
+            imdbRating.textContent = "⦿ IMDB Rating : " + data.imdbRating + " " + rating;
+            movieDetails.append(imdbRating);
+
+            if(data.imdbRating >= 8.5){
+                const remocommendationTag = document.createElement("h3");
+                remocommendationTag.innerHTML = "★ RECOMMENDED MOVIE : Must Watch Before you Die";
+                remocommendationTag.style.color = "#36FF33"
+                movieDetails.append(remocommendationTag);
+            }
+
+            container.append(movieDiv, movieDetails);
+            movieDetails.style.marginLeft = "50px";
+
+            var navBar = document.getElementById("nav");
+            navBar.append(container);
+        }
+
+        function ratingStar(rating, star) {
+            if (Number(rating) > 8) {
+                star = "★★★★★";
+            }
+            else if (Number(rating) > 6) {
+                star = "★★★★☆";
+            }
+            else if (Number(rating) > 4) {
+                star = "★★★☆☆";
+            }
+            else if (Number(rating) > 2) {
+                star = "★★☆☆☆";
+            }
+            else if (Number(rating) > 0) {
+                star = "★☆☆☆☆";
+            }
+            return star;
+        }
+
+
+    function dynamicSearch(){
+        setInterval(()=>{
+            const searchInput = document.getElementById("movieSearchText").value;
+                if (searchInput) {
+                    searchMovieFunction(searchInput);
+                }
+                else {
+                    const container = document.getElementById("container");
+                    container.innerHTML = "";
+                    const errorImage = document.createElement("img");
+                    errorImage.src = 'https://juststickers.in/wp-content/uploads/2016/12/404-error-not-found.png';
+                    errorImage.style.height = "300px"
+                    errorImage.style.width = "300px"
+                    errorImage.style.paddingLeft = "35%"
+                    errorImage.style.marginTop = "10px"
+                    container.append(errorImage);
+                    const navBar = document.getElementById("nav");
+                    navBar.append(container);
+                }
+        },300);
+    }
+
+
+
+window.addEventListener("load",()=>{
+    dynamicSearch();
+})
+
+
+
+
+    </script>
+
+
+</body>
+
+</html>
